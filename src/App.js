@@ -10,13 +10,13 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
-    const response = await fetch('/api');
+    const response = await fetch("/api/stonks");
     const json = await response.json();
     this.setState({ data: json });
   }
 
   render() {
-    return <div id="App">Hello World {JSON.stringify(this.state.data)}</div>;
+    return <div id="main">Let's get some data: {JSON.stringify(this.state.data)}</div>;
   }
 }
 
