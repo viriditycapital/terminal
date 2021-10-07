@@ -11,10 +11,23 @@ class App extends React.Component {
     this.state = {
       search_query: "",
       stock_data: {},
+      chart_price: null,
     };
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
     this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+    this.componentDidMount = this.componentDidMount.bind(this);
+  }
+
+  componentDidMount () {
+    let chart_price = new Chart_d3("chart-price", {
+      top: 20,
+      right: 20,
+      bottom: 50,
+      left: 70,
+    });
+
+    this.setState({chart_price: chart_price});
   }
 
   handleSearchChange(event) {
@@ -34,14 +47,7 @@ class App extends React.Component {
     let historical = this.state.stock_data?.historical;
 
     if (historical != null) {
-      let chart_price = new Chart_d3("chart-price", {
-        top: 20,
-        right: 20,
-        bottom: 50,
-        left: 70,
-      });
-
-      chart_price.plot_line("price", historical, "date", "close", true);
+      this.state.chart_price.plot_line("price", historical, "date", "close", true);
     }
 
     return (

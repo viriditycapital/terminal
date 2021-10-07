@@ -73,8 +73,12 @@ export class Chart_d3 {
     stroke_width = CONST_PLOT.LINE_THICKNESS_THIN,
     transition_duration = CONST_PLOT.TRANSITION_DURATION
   ) {
+    data.forEach(d => {
+      d.date = d3.isoParse(d.date);
+    });
     // Create the X axis:
     this.x.domain(d3.extent(data, (d) => d[data_x]));
+    console.log('x domain', this.x.domain);
     this.svg.selectAll(`.${CONST_PLOT.X_AXIS_CLASS}`)
       .transition()
       .duration(transition_duration)
