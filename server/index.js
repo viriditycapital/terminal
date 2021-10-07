@@ -1,23 +1,27 @@
-const express = require('express');
-const yahooFinance = require('yahoo-finance2').default; // NOTE the .default
+const express = require("express");
+const yahooFinance = require("yahoo-finance2").default; // NOTE the .default
 
 const app = express();
 const port = process.env.PORT || 3000;
 const mockResponse = {
-  foo: 'bar',
-  bar: 'foo'
+  foo: "bar",
+  bar: "foo",
 };
 
-app.get('/api', (req, res) => {
+app.get("/api", (req, res) => {
   res.send(mockResponse);
 });
 
-app.get('/api/stonks', async (req, res) => {
-  const results = await yahooFinance.search('AAPL');
+app.get("/api/stonks/:ticker", async (req, res) => {
+  const search = await yahooFinance.search(req.params.ticker);
+  const quotes = await yahooFinance.quote(req.params.ticker);
 
-  res.send(results);
+  res.send({
+    search,
+    quotes,
+  });
 });
 
 app.listen(port, function () {
- console.log('App listening on port: ' + port);
+  console.log("App listening on port: " + port);
 });

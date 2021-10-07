@@ -6,17 +6,62 @@ import React from "react";
 class App extends React.Component {
   constructor() {
     super();
-    this.state = { data: [] };
+    this.state = {
+      search_query: "",
+      stock_data: {},
+    };
+
+    this.handleSearchChange = this.handleSearchChange.bind(this);
+    this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
   }
 
-  async componentDidMount() {
-    const response = await fetch("/api/stonks");
-    const json = await response.json();
-    this.setState({ data: json });
+  handleSearchChange(event) {
+    this.setState({ search_query: event.target.value });
+  }
+
+  async handleSearchSubmit(event) {
+    event.preventDefault();
+    let response = await fetch(`/api/stonks/${this.state.search_query}`);
+    let json = await response.json();
+    this.setState({ stock_data: json });
   }
 
   render() {
-    return <div id="main">Let's get some data: {JSON.stringify(this.state.data)}</div>;
+    let stock_data = this.state.stock_data;
+    let quotes = this.state.stock_data?.quotes;
+    return (
+      <div id="main">
+        <div id="header">
+          <div id="search-bar">
+            <form onSubmit={this.handleSearchSubmit}>
+              <input
+                type="text"
+                value={this.state.value}
+                onChange={this.handleSearchChange}
+              />
+              <input type="submit" value="Go!" />
+            </form>
+          </div>
+        </div>
+        <div id="main-content">
+          Getting quotes for {quotes?.shortName}
+          <div id="chart">
+            <div id="bid">{`$${quotes?.bid} x ${quotes?.bidSize}`}</div>
+            <div id="ask">{`$${quotes?.ask} x ${quotes?.askSize}`}</div>
+          </div>
+          <div id="news">
+            <div id="news-header">News</div>
+            <div id="news-articles">
+              {stock_data.search?.news.map((news) => (
+                <a href={news.link} target="_blank" key={news.title}>
+                  {news.title}
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 }
 
