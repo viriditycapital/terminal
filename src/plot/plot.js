@@ -78,7 +78,6 @@ export class Chart_d3 {
     });
     // Create the X axis:
     this.x.domain(d3.extent(data, (d) => d[data_x]));
-    console.log('x domain', this.x.domain);
     this.svg.selectAll(`.${CONST_PLOT.X_AXIS_CLASS}`)
       .transition()
       .duration(transition_duration)

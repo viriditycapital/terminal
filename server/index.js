@@ -16,19 +16,37 @@ app.get("/api/stonks/:ticker", async (req, res) => {
   let date = new Date();
   date.setDate(date.getDate() - 30);
   const search = await yahooFinance.search(req.params.ticker);
-  const quotes = await yahooFinance.quote(req.params.ticker);
+
+  let quotes;
+  if (req.params.ticker.length > 0) {
+    quotes = await yahooFinance.quote(req.params.ticker);
+  } else {
+    quotes = {};
+  }
 
   const historical = await yahooFinance.historical(req.params.ticker, {
     period1: date,
     period2: new Date(),
     interval: '1d'
   });
-  console.log(date, new Date());
 
   res.send({
     search,
     quotes,
     historical
+  });
+});
+
+app.get("/api/stonks/quote/:ticker", async (req, res) => {
+  let quotes;
+  if (req.params.ticker.length > 0) {
+    quotes = await yahooFinance.quote(req.params.ticker);
+  } else {
+    quotes = {};
+  }
+
+  res.send({
+    quotes,
   });
 });
 
