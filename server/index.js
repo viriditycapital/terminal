@@ -51,7 +51,15 @@ app.get("/api/stonks/quote/:ticker", async (req, res) => {
 });
 
 app.get("/api/stonks/options/:ticker", async (req, res) => {
-  const queryOptions = { lang: 'en-US', formatted: false, region: 'US' };
+  let queryOptions = { lang: 'en-US', formatted: false, region: 'US' };
+
+  const expDate = req.query.expdate;
+
+  console.log('expDate', expDate);
+
+  if (expDate != null) {
+    queryOptions.date = expDate;
+  }
 
   let options;
   if (req.params.ticker.length > 0) {

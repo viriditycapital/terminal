@@ -1,9 +1,15 @@
 #expiration-dates {
   display: flex;
   flex-direction: row;
+  cursor: pointer;
 
   .opex-date {
     margin: 8px;
+    transition-duration: 200ms;
+
+    &.selected {
+      font-weight: bold;
+    }
   }
 }
 
