@@ -4,6 +4,7 @@ import { Chart_d3 } from "./plot/plot.js";
 import Options from "./components/Options.js";
 import Ticker from "./components/Ticker.js";
 import { CURRENCY_TO_SYMBOL } from "./CONST_DATA";
+import Twitter from "./components/Twitter.js";
 
 /**
  * This is the highest level of the web app.
@@ -133,10 +134,7 @@ class App extends React.Component {
               ))}
             </div>
           </div>
-          <div id="twitter">
-            Relevant tweets, scrape from fintwit and walter bloomberg
-            (Deltaone), FxHedgers, LiveSquawk
-          </div>
+          <Twitter/>
         </div>
       </div>
     );
