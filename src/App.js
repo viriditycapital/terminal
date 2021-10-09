@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Chart_d3 } from "./plot/plot.js";
+import Options from "./components/Options.js";
 import Ticker from "./components/Ticker.js";
 import { CURRENCY_TO_SYMBOL } from "./CONST_DATA";
 
@@ -16,6 +17,8 @@ class App extends React.Component {
       chart_price: null,
       ticker: null,
       currency: "USD",
+      is_market_hours: false,
+      watcher: null,
     };
 
     this.handleSearchChange = this.handleSearchChange.bind(this);
@@ -31,7 +34,24 @@ class App extends React.Component {
       left: 70,
     });
 
-    this.setState({ chart_price: chart_price });
+    const interval = setInterval(async () => {
+      const marketOpen = 9 * 60 + 30; // 9:30 AM
+      const marketClosed = 16 * 60; // 4 PM
+      let now = new Date();
+      let currentTime = now.getHours() * 60 + now.getMinutes();
+      let is_market_hours =
+        currentTime >= marketOpen && currentTime <= marketClosed;
+
+      if (this.state.is_market_hours !== is_market_hours) {
+        this.setState({ is_market_hours: is_market_hours });
+      }
+    }, 1000);
+
+    this.setState({ chart_price: chart_price, watcher: interval });
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.state.watcher);
   }
 
   handleSearchChange(event) {
@@ -79,6 +99,7 @@ class App extends React.Component {
           <div id="market-price">
             <Ticker
               ticker={this.state.ticker}
+              is_market_hours={this.state.is_market_hours}
               currency_symbol={CURRENCY_TO_SYMBOL[this.state.currency]}
             />
           </div>
@@ -96,10 +117,14 @@ class App extends React.Component {
           </div>
           <div id="options">
             <h1>Options Chain</h1>
-            <div id="options-chain"></div>
+            <Options
+              ticker={this.state.ticker}
+              is_market_hours={this.state.is_market_hours}
+              currency_symbol={CURRENCY_TO_SYMBOL[this.state.currency]}
+            />
           </div>
           <div id="news">
-            <div id="news-header">News</div>
+            <h1>News</h1>
             <div id="news-articles">
               {stock_data.search?.news.map((news) => (
                 <a href={news.link} target="_blank" key={news.title}>

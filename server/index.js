@@ -50,6 +50,21 @@ app.get("/api/stonks/quote/:ticker", async (req, res) => {
   });
 });
 
+app.get("/api/stonks/options/:ticker", async (req, res) => {
+  const queryOptions = { lang: 'en-US', formatted: false, region: 'US' };
+
+  let options;
+  if (req.params.ticker.length > 0) {
+    options = await yahooFinance.options(req.params.ticker, queryOptions);
+  } else {
+    options = {};
+  }
+
+  res.send({
+    options,
+  });
+});
+
 app.listen(port, function () {
   console.log("App listening on port: " + port);
 });
