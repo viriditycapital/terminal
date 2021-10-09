@@ -1,5 +1,7 @@
 const express = require("express");
 const yahooFinance = require("yahoo-finance2").default; // NOTE the .default
+const KEYS = require("../keys/keys.json");
+const { TwitterApi } = require("twitter-api-v2");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -7,6 +9,8 @@ const mockResponse = {
   foo: "bar",
   bar: "foo",
 };
+
+const client = new TwitterApi(KEYS.twitter.bearer_token);
 
 app.get("/api", (req, res) => {
   res.send(mockResponse);
@@ -27,13 +31,13 @@ app.get("/api/stonks/:ticker", async (req, res) => {
   const historical = await yahooFinance.historical(req.params.ticker, {
     period1: date,
     period2: new Date(),
-    interval: '1d'
+    interval: "1d",
   });
 
   res.send({
     search,
     quotes,
-    historical
+    historical,
   });
 });
 
@@ -51,11 +55,9 @@ app.get("/api/stonks/quote/:ticker", async (req, res) => {
 });
 
 app.get("/api/stonks/options/:ticker", async (req, res) => {
-  let queryOptions = { lang: 'en-US', formatted: false, region: 'US' };
+  let queryOptions = { lang: "en-US", formatted: false, region: "US" };
 
   const expDate = req.query.expdate;
-
-  console.log('expDate', expDate);
 
   if (expDate != null) {
     queryOptions.date = expDate;
@@ -70,6 +72,19 @@ app.get("/api/stonks/options/:ticker", async (req, res) => {
 
   res.send({
     options,
+  });
+});
+
+app.get("/api/tweets/:user", async (req, res) => {
+  let user = req.params.user;
+
+  const twitter_user = await client.v2.userByUsername(user);
+  const tweets = await client.v2.userTimeline(twitter_user.data.id, {
+    exclude: "replies",
+  });
+
+  res.send({
+    tweets,
   });
 });
 
